@@ -1,27 +1,12 @@
 import os
-from typing import List
+from typing import List, Tuple
 
-def get_game_id(game: str) -> int:
-    # Split the string by spaces and grab the second element (index 1)
-    # which should be the number following "Game"
-    parts = game.split()
-    if len(parts) > 1 and parts[0].lower() == "game":
-        # Convert the game number to an integer and return it
-        game_number = parts[1].split(":")[0]
-        return int(game_number)
-    
-    else:
-        return -1
-
-def game_is_possible(game: str) -> bool:
-    REDS = 12
-    GREENS = 13
-    BLUES = 14
-
+def minimum_necessary_balls(game: str) -> Tuple[int, int, int]:
     # Split the game string into sets
     sets = game.split(';')
-    
-    max_reds, max_greens, max_blues = 0, 0, 0
+
+    # Initialize the minimum requirements to 0
+    min_reds, min_greens, min_blues = 0, 0, 0
 
     for set in sets:
         # Initialize counts for the current set
@@ -35,26 +20,24 @@ def game_is_possible(game: str) -> bool:
 
                 if 'red' in color:
                     current_reds += number
-                elif 'green' in color :
+                elif 'green' in color:
                     current_greens += number
                 elif 'blue' in color:
                     current_blues += number
-                else:
-                    pass # something went wrong 
 
-        # Update max counts if current set has more
-        max_reds = max(max_reds, current_reds)
-        max_greens = max(max_greens, current_greens)
-        max_blues = max(max_blues, current_blues)
+        # Update minimum requirements if the current set has more
+        min_reds = max(min_reds, current_reds)
+        min_greens = max(min_greens, current_greens)
+        min_blues = max(min_blues, current_blues)
 
-    # Check if the game is possible with the available cubes
-    return max_reds <= REDS and max_greens <= GREENS and max_blues <= BLUES
+    return min_reds, min_greens, min_blues
 
-def sum_ids_possible_games(game_list: List[str]) -> int:
+
+def product_of_minimum_balls(game_list: List[str]) -> int:
     result = 0
     for game in game_list:
-        if (game_is_possible(game)):
-            result += get_game_id(game)
+        red, green, blue = minimum_necessary_balls(game)
+        result += red * green * blue
 
     return result
 
@@ -67,9 +50,9 @@ def test_example_data():
         "Game 5: 6 red, 1 blue, 3 green; 2 blue, 1 red, 2 green"
     ]
 
-    result = sum_ids_possible_games(example_data)
+    result = product_of_minimum_balls(example_data)
 
-    assert result == 8
+    assert result == 2286
 
     
 
@@ -88,6 +71,6 @@ if __name__ == "__main__":
     
     assert len(puzzle_lines) > 0
 
-    result = sum_ids_possible_games(puzzle_lines)
+    result = product_of_minimum_balls(puzzle_lines)
 
     print(result)
