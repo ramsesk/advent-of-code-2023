@@ -1,4 +1,5 @@
 from typing import List
+import os
 
 example_data = {
     "1abc2": 12,
@@ -44,4 +45,17 @@ def calibrate_text(calibration_lines: List[str]):
 if __name__ == "__main__":
     test_example_data()
 
-    if 
+    py_file_path = os.path.dirname(__file__)
+    calibration_doc_path = os.path.join(py_file_path, "calibrationdoc.txt")
+
+    assert(os.path.exists(calibration_doc_path))
+
+    calibration_lines = []
+    with open(calibration_doc_path) as f:
+        calibration_lines = f.readlines()
+    
+    assert len(calibration_lines) > 0
+
+    calibration_value = calibrate_text(calibration_lines)
+
+    print(calibration_value)
