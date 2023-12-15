@@ -32,8 +32,6 @@ def calibrate_line(line: str):
         return 0  # Return 0 if no integers are found in the string
 
 
-    return 0
-
 def calibrate_text(calibration_lines: List[str]):
     total_calibration_value = 0
     for line in calibration_lines:
