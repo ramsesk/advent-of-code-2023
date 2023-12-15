@@ -14,33 +14,45 @@ def get_game_id(game: str) -> int:
         return -1
 
 def game_is_possible(game: str) -> bool:
-    # 12 red cubes, 13 green cubes, and 14 blue cubes
     REDS = 12
     GREENS = 13
-    BLUES = 14 
+    BLUES = 14
 
-    # Variables to track the total number of each color required by the game
-    total_reds = 0
-    total_greens = 0
-    total_blues = 0
+    # Split the game string into sets
+    sets = game.split(';')
+    
+    max_reds, max_greens, max_blues = 0, 0, 0
 
-    # Split the string into parts and iterate over them
-    parts = game.split()
-    for i, part in enumerate(parts):
-        if part.isdigit() and i + 1 < len(parts):
-            # Convert the number and check the next part for the color
-            number = int(part)
-            color = parts[i + 1].lower()
+    for set in sets:
+        # Initialize counts for the current set
+        current_reds, current_greens, current_blues = 0, 0, 0
 
-            if 'red' in color:
-                total_reds += number
-            elif 'green' in color:
-                total_greens += number
-            elif 'blue' in color:
-                total_blues += number
+        parts = set.split()
+        for i, part in enumerate(parts):
+            if part.isdigit() and i + 1 < len(parts):
+                number = int(part)
+                color = parts[i + 1].lower()
+
+                if 'red' in color:
+                    current_reds += number
+                elif 'green' in color :
+                    current_greens += number
+                elif 'blue' in color:
+                    current_blues += number
+                else:
+                    pass # something went wrong 
+
+        # Update max counts if current set has more
+        max_reds = max(max_reds, current_reds)
+        max_greens = max(max_greens, current_greens)
+        max_blues = max(max_blues, current_blues)
 
     # Check if the game is possible with the available cubes
-    return total_reds <= REDS and total_greens <= GREENS and total_blues <= BLUES
+    return max_reds <= REDS and max_greens <= GREENS and max_blues <= BLUES
+
+# Test with a sample game string
+print(game_is_possible("Game 1: 3 blue, 4 red; 1 red, 2 green, 6 blue; 2 green"))  # Test output
+
 
 
 def sum_ids_possible_games(game_list: List[str]) -> int:
@@ -68,3 +80,19 @@ def test_example_data():
 
 if __name__ == "__main__":
     test_example_data()
+
+    
+    py_file_path = os.path.dirname(__file__)
+    puzzle_doc_path = os.path.join(py_file_path, "puzzle_input.txt")
+
+    assert(os.path.exists(puzzle_doc_path))
+
+    puzzle_lines = []
+    with open(puzzle_doc_path) as f:
+        puzzle_lines = f.readlines()
+    
+    assert len(puzzle_lines) > 0
+
+    result = sum_ids_possible_games(puzzle_lines)
+
+    print(result)
