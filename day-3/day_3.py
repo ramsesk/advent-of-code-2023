@@ -1,8 +1,19 @@
 import os
 from typing import List
 
+def readlines_from_file(file_path: str) -> List[str]:
+    assert(os.path.exists(file_path))
+
+    lines = []
+    with open(file_path) as f:
+        lines = f.readlines()
+    
+    assert len(lines) > 0
+
+    return lines
+
 def sum_of_all_engine_parts(engine_diagram: List[str]) -> int:
-    SPECIAL_SYMBOLS = {'*', '#', '+', '$'}
+    SPECIAL_SYMBOLS = {'*', '#', '+', '$', '&', '/', '@', '-', '%', '=', '+'}
     total_sum = 0
 
     # Helper function to find start and end indices of a number in a row
@@ -67,4 +78,11 @@ def test_example_date():
 
 if __name__ == "__main__":
     test_example_date()
-    pass
+    
+    py_file_path = os.path.dirname(__file__)
+    puzzle_doc_path = os.path.join(py_file_path, "puzzle_input.txt")
+
+    puzzle_lines = readlines_from_file(puzzle_doc_path)
+
+    result = sum_of_all_engine_parts(puzzle_lines)
+    print(result)
