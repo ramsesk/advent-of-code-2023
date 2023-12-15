@@ -8,11 +8,29 @@ example_data = {
 }
 
 def test_example_data():
-    total_calibration_value = calibrate_text(example_data.keys)
+    total_calibration_value = calibrate_text(example_data.keys())
 
     assert total_calibration_value == 142
 
 def calibrate_line(line: str):
+    first_integer = None
+    last_integer = None
+
+    for char in line:
+        if char.isdigit():
+            if first_integer is None:
+                first_integer = char
+            
+            last_integer = char
+
+    
+    # Combine the integers if both are found
+    if first_integer is not None and last_integer is not None:
+        return int(f"{first_integer}{last_integer}")
+    else:
+        return 0  # Return 0 if no integers are found in the string
+
+
     return 0
 
 def calibrate_text(calibration_lines: List[str]):
@@ -21,7 +39,9 @@ def calibrate_text(calibration_lines: List[str]):
         calibration_value = calibrate_line(line)
         total_calibration_value += calibration_value
 
-    return calibration_value
+    return total_calibration_value
 
 if __name__ == "__main__":
     test_example_data()
+
+    if 
