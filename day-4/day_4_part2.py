@@ -26,27 +26,6 @@ def calculate_scratchcard_matches(card_numbers: str) -> int:
     return len(matches)
 
 
-# def calculate_scratchcards_copies(cards: List[str]) -> int:
-#     total_points = 0
-
-#     # gamenumber , matches
-#     matches_per_card = {}
-
-#     for card in cards:
-#         game_number_string, numbers_string = card.split(":")
-#         game_number = int(game_number_string.split()[1])
-#         matches = calculate_scratchcard_matches(numbers_string)
-#         matches_per_card[game_number] = matches
-
-#     # if a card has 5 matches, it will add one extra card for the next 5 cards in the list
-#     # never going outside of the list (matches outside of the list are ignored)
-#     copies_per_card = {(game_number, 1) for game_number, matches in matches_per_card}
-#     for game_number, matches in matches_per_card.items:
-#         pass
-
-#     return total_points
-
-
 def calculate_scratchcards_copies(cards: List[str]) -> int:
     # gamenumber, matches
     matches_per_card = {}
