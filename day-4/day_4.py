@@ -1,4 +1,17 @@
 from typing import List
+import os
+
+
+def readlines_from_file(file_path: str) -> List[str]:
+    assert os.path.exists(file_path)
+
+    lines = []
+    with open(file_path) as f:
+        lines = f.readlines()
+
+    assert len(lines) > 0
+
+    return lines
 
 
 def calculate_scratchcard(card: str) -> int:
@@ -47,3 +60,11 @@ def test_example_data():
 
 if __name__ == "__main__":
     test_example_data()
+
+    py_file_path = os.path.dirname(__file__)
+    puzzle_doc_path = os.path.join(py_file_path, "puzzle_input.txt")
+
+    puzzle_lines = readlines_from_file(puzzle_doc_path)
+
+    result = calculate_scratchcards(puzzle_lines)
+    print(result)
