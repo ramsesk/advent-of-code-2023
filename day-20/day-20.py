@@ -104,12 +104,9 @@ class ModuleConfiguration:
     def __init__(self, config_data: List[str]) -> None:
         self.modules: Dict[str, BaseModule] = {}
         self.parse_config_data(config_data)
+        self.create_default_modules_for_undefined_destinations()
         self.setup_all_destinations()
-        broadcaster = self.modules.get("broadcaster")
-        assert broadcaster
-        button = ButtonModule()
-        button.destinations = [broadcaster]
-        self.modules[button.module_name] = button
+        self.add_button_module()
 
     def parse_config_data(self, config_data: List[str]) -> None:
         for line in config_data:
@@ -123,11 +120,29 @@ class ModuleConfiguration:
                     # Initialize the state for this input module in the ConjunctionModule
                     dest.states[module.module_name] = PulseType.LOW
 
+    def create_default_modules_for_undefined_destinations(self):
+        all_destinations = set()
+        for module in self.modules.values():
+            if isinstance(module.destinations, list):
+                all_destinations.update(dest for dest in module.destinations if isinstance(dest, str))
+
+        for dest_name in all_destinations:
+            if dest_name not in self.modules:
+                self.modules[dest_name] = BaseModule(dest_name, [])
+
     def setup_all_destinations(self) -> None:
         for module in self.modules.values():
-            if isinstance(module.destinations, list) and module.destinations and isinstance(module.destinations[0], str):
-                module.destinations = [self.modules[dest_name] for dest_name in module.destinations if dest_name in self.modules]
-        self.initialize_conjunction_inputs()  
+            module.destinations = [self.modules[dest_name] if isinstance(dest_name, str) else dest_name for dest_name in module.destinations]
+
+        self.initialize_conjunction_inputs()
+
+    
+    def add_button_module(self):
+        broadcaster = self.modules.get("broadcaster")
+        if broadcaster:
+            button = ButtonModule()
+            button.destinations = [broadcaster]
+            self.modules[button.module_name] = button
 
     def __str__(self) -> str:
         return "\n".join(str(module) for module in self.modules.values())
