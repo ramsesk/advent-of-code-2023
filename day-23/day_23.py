@@ -155,6 +155,32 @@ def test_example_data() -> None:
 
     assert path_length == 94, "Longest path according to data should be 94 tiles."
 
+import os
+def readlines_from_file(file_path: str) -> List[str]:
+    assert os.path.exists(file_path)
+
+    lines = []
+    with open(file_path) as f:
+        lines = f.readlines()
+
+    assert len(lines) > 0
+
+    return lines
 
 if __name__ == "__main__":
     test_example_data()
+
+    py_file_path = os.path.dirname(__file__)
+    puzzle_doc_path = os.path.join(py_file_path, "puzzle_input.txt")
+
+    puzzle_lines = readlines_from_file(puzzle_doc_path)
+    
+    advent_map = AdventMap(puzzle_lines)
+    advent_map.print_map()
+
+    path_finder = PathFinder(advent_map)
+    longest_path = path_finder.find_longest_path()
+
+    path_length = len(longest_path) -1 # minus one because length is not equal to nodes
+    print("\nLongest Path Length:", path_length)
+    advent_map.print_map(longest_path)
