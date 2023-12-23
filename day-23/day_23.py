@@ -84,7 +84,8 @@ class PathFinder:
         moves = []
         current_tile = self.map[x][y]
 
-        if current_tile == MapTile.PATH or current_tile == MapTile.FOREST:
+        # Movement is only allowed on path tiles or in the direction of slope tiles
+        if current_tile == MapTile.PATH:
             # Can move in any direction
             moves = [(1, 0), (0, 1), (0, -1), (-1, 0)]
         elif current_tile == MapTile.SLOPE_DOWN:
@@ -101,7 +102,9 @@ class PathFinder:
         for dx, dy in moves:
             new_x, new_y = x + dx, y + dy
             if 0 <= new_x < len(self.map) and 0 <= new_y < len(self.map[0]):
-                valid_moves.append((dx, dy))
+                next_tile = self.map[new_x][new_y]
+                if next_tile != MapTile.FOREST:
+                    valid_moves.append((dx, dy))
 
         return valid_moves
 
@@ -146,10 +149,11 @@ def test_example_data() -> None:
     path_finder = PathFinder(advent_map)
     longest_path = path_finder.find_longest_path()
 
-    print("\nLongest Path Length:", len(longest_path))
+    path_length = len(longest_path) -1 # minus one because length is not equal to nodes
+    print("\nLongest Path Length:", path_length)
     advent_map.print_map(longest_path)
 
-    assert len(longest_path) == 94
+    assert path_length == 94, "Longest path according to data should be 94 tiles."
 
 
 if __name__ == "__main__":
