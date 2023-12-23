@@ -59,26 +59,28 @@ class PathFinder:
         
         assert 0, "No start found on first row"
 
-    def dfs(self, position: Tuple[int, int], current_path: List[Tuple[int, int]]) -> None:
-        x, y = position
-        if x < 0 or x >= len(self.map) or y < 0 or y >= len(self.map[0]) or position in self.visited:
-            return  # Out of bounds or already visited
+    def dfs(self, start: Tuple[int, int]) -> None:
+        stack = [(start, [start])]
 
-        current_path.append(position)
-        self.visited.add(position)
+        while stack:
+            position, current_path = stack.pop()
+            x, y = position
 
-        # Check if we've reached the bottom row
-        if x == len(self.map) - 1:
-            if len(current_path) > len(self.longest_path):
-                self.longest_path = list(current_path)
-        else:
-            # Explore adjacent tiles
+            if position in self.visited:
+                continue
+
+            self.visited.add(position)
+
+            # Check if we've reached the bottom row
+            if x == len(self.map) - 1:
+                if len(current_path) > len(self.longest_path):
+                    self.longest_path = current_path
+                continue
+
             for dx, dy in self.get_possible_moves(x, y):
-                self.dfs((x + dx, y + dy), current_path)
-
-        # Backtrack
-        current_path.pop()
-        self.visited.remove(position)
+                next_position = (x + dx, y + dy)
+                if next_position not in self.visited:
+                    stack.append((next_position, current_path + [next_position]))
     
     def get_possible_moves(self, x: int, y: int) -> List[Tuple[int, int]]:
         moves = []
@@ -174,7 +176,7 @@ if __name__ == "__main__":
     puzzle_doc_path = os.path.join(py_file_path, "puzzle_input.txt")
 
     puzzle_lines = readlines_from_file(puzzle_doc_path)
-    
+
     advent_map = AdventMap(puzzle_lines)
     advent_map.print_map()
 
