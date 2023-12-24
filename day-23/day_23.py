@@ -192,6 +192,60 @@ class PathFinderPart2(PathFinder):
                     new_path = current_path + [next_position]
                     stack.append((next_position, new_path, depth + 1))  # Increment depth
 
+import heapq
+class AStarPathFinder():
+    def __init__(self, advent_map: AdventMap):
+        self.map = advent_map.forest_map
+        self.goal_row = len(self.map) - 1
+
+    def heuristic(self, position: Tuple[int, int]) -> int:
+        # Simple heuristic: distance to the bottom row
+        x, y = position
+        return self.goal_row - x
+
+    def a_star_search(self) -> List[Tuple[int, int]]:
+        start = self.find_start()
+        open_set = [(0 + self.heuristic(start), 0, start, [start])]  # (F cost, G cost, position, path)
+
+        while open_set:
+            _, g_cost, current, path = heapq.heappop(open_set)
+
+            if current[0] == self.goal_row:
+                return path  # Reached the goal
+
+            for dx, dy in self.get_possible_moves(*current):
+                next_position = (current[0] + dx, current[1] + dy)
+                if next_position not in path:  # Avoid cycles
+                    new_g = g_cost + 1
+                    heapq.heappush(open_set, (new_g + self.heuristic(next_position), new_g, next_position, path + [next_position]))
+
+        return []  # No path found
+    
+    def find_start(self) -> Tuple[int, int]:
+        for x, tile in enumerate(self.map[0]):
+            if tile == MapTile.PATH:
+                return (0, x)
+        
+        assert 0, "No start found on first row"
+
+    def get_possible_moves(self, x: int, y: int) -> List[Tuple[int, int]]:
+        moves = []
+        current_tile = self.map[x][y]
+
+        # Treat all tiles including slopes as normal paths
+        if current_tile in [MapTile.PATH, MapTile.FOREST, MapTile.SLOPE_DOWN, MapTile.SLOPE_UP, MapTile.SLOPE_LEFT, MapTile.SLOPE_RIGHT]:
+            moves = [(1, 0), (0, 1), (0, -1), (-1, 0)]
+
+        # Filter out invalid moves
+        valid_moves = []
+        for dx, dy in moves:
+            new_x, new_y = x + dx, y + dy
+            if 0 <= new_x < len(self.map) and 0 <= new_y < len(self.map[0]):
+                next_tile = self.map[new_x][new_y]
+                if next_tile != MapTile.FOREST:
+                    valid_moves.append((dx, dy))
+
+        return valid_moves
 
 def test_example_data() -> None:
     example_data = [
